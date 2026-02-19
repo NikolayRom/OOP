@@ -1,5 +1,5 @@
 package command;
 
-public class UnblockAccountCommand implements Command {
+public class UnblockAccountCommand extends AbstractCommand {
     
 }

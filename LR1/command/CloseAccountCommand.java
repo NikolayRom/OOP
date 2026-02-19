@@ -1,5 +1,5 @@
 package command;
 
-public class CloseAccountCommand implements Command {
+public class CloseAccountCommand extends AbstractCommand {
     
 }

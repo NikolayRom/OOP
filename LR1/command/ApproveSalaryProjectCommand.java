@@ -1,5 +1,5 @@
 package command;
 
-public class ApproveSalaryProjectCommand implements Command {
+public class ApproveSalaryProjectCommand extends AbstractCommand {
     
 }

@@ -1,5 +1,5 @@
 package command;
 
-public class TransferCommand implements Command {
+public class TransferCommand extends AbstractCommand {
     
 }

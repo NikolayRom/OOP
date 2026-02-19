@@ -1,5 +1,5 @@
 package command;
 
-public class CompanyDropCommand implements Command {
+public class CompanyDropCommand extends AbstractCommand {
     
 }

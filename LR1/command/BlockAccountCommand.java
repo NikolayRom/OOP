@@ -1,5 +1,5 @@
 package command;
 
-public class BlockAccountCommand implements Command {
+public class BlockAccountCommand extends AbstractCommand {
     
 }
