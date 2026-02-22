@@ -2,7 +2,7 @@ package model;
 
 public final class IdGen {
     private static IdGen Instance;
-    private int id = 0;
+    private int id = 1;
     private IdGen(){}
     public static IdGen getInstance() {
         if(Instance == null) {

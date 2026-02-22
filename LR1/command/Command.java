@@ -1,7 +1,7 @@
 package command;
 
 public interface Command {
-    void execute();
-    void undo();
-    void commandInfo();
+    String execute() throws Exception;
+    String undo() throws Exception;
+    String toString();
 }

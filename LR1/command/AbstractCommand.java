@@ -15,9 +15,16 @@ public abstract class AbstractCommand implements Identifiable, Command {
         this.dateCreated = LocalDate.now();
     }
 
-    public abstract void commandInfo();
-    public abstract void execute();
-    public abstract void undo();
+    public abstract String toString();
+    public abstract String execute() throws Exception;
+    public abstract String undo() throws Exception;
+
+    public int getUserId() {
+        return this.userId;
+    }
+    public LocalDate getDateCreated() {
+        return this.dateCreated;
+    }
 
     @Override
     public int getId() {

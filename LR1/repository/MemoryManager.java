@@ -1,35 +1,40 @@
 package repository;
 
 import model.Identifiable;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Optional;
 
 public abstract class MemoryManager<T extends Identifiable> implements Repository<T> {
-    protected List<T> storage = new ArrayList<>();
+    protected HashMap<Integer, T> storage = new HashMap<>();
 
     @Override
     public void clear() {
         storage.clear();
     }
+  
     @Override
-    public boolean isEmpty() {
-        return storage.isEmpty();
-    }
-    @Override
-    public void deleteById(int id) {
-        storage.removeIf(ent -> ent.getId() == id);
+    public Optional<T> deleteById(int id) {
+        if(!storage.containsKey(id) || storage.get(id) == null) {
+            return Optional.empty();
+        }
+        return Optional.of(storage.remove(id));
     }
     @Override
     public Optional<T> findById(int id) {
-        return storage.stream().filter(ent -> ent.getId() == id).findFirst();
+        if(!storage.containsKey(id) || storage.get(id) == null) {
+            return Optional.empty();
+        }
+        return Optional.of(storage.get(id));
     }
     @Override
-    public List<T> getAll() {
-        return new ArrayList<>(storage);
+    public Optional<HashMap<Integer, T>> getAll() {
+        if(storage.isEmpty()) {
+            return Optional.empty();
+        }
+        return Optional.of(new HashMap<>(storage));
     }
     @Override
     public void save(T entity) {
-        storage.add(entity);
+        storage.put(entity.getId(), entity);
     }
 }

@@ -2,6 +2,8 @@ package model;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+import exception.InsufficientFundsException;
+
 public abstract class Account implements Identifiable {
     protected int id;
     protected int userId;
@@ -9,14 +11,16 @@ public abstract class Account implements Identifiable {
     protected LocalDate dateCreated;
     protected BigDecimal balance;
     protected boolean isBlocked;
+    protected AccountType type;
 
-    Account(int userId, int bankId) {
+    public Account(int userId, int bankId, AccountType type) {
         this.id = IdGen.getInstance().newId();
         this.userId = userId;
         this.bankId = bankId;
         this.dateCreated = LocalDate.now();
         this.balance = BigDecimal.ZERO;
         this.isBlocked = false;
+        this.type = type;
     }
 
     @Override
@@ -36,8 +40,17 @@ public abstract class Account implements Identifiable {
     public BigDecimal getBalance() {
         return this.balance;
     }
-    public boolean isBlocked() {
+    public boolean getIsBlocked() {
         return this.isBlocked;
     }
-    public abstract void deposit(BigDecimal amount);
+
+    public void setBalance(BigDecimal amount) throws InsufficientFundsException {
+        if(amount.compareTo(BigDecimal.ZERO) < 0) {
+            throw new InsufficientFundsException();
+        }
+        this.balance = amount;
+    }
+
+    public abstract void deposit(BigDecimal amount) throws Exception;
+    public abstract void withdrawal(BigDecimal amount) throws Exception;
 }
