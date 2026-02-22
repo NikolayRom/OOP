@@ -50,6 +50,9 @@ public abstract class Account implements Identifiable {
         }
         this.balance = amount;
     }
+    public void setIsBlocked(boolean bool) {
+        this.isBlocked = bool;
+    }
 
     public abstract void deposit(BigDecimal amount) throws Exception;
     public abstract void withdrawal(BigDecimal amount) throws Exception;
