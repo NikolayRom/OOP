@@ -1,6 +1,6 @@
 package model;
 
-public abstract class Bank implements Identifiable {
+public class Bank implements Identifiable {
     private int id;
     private String name;
 

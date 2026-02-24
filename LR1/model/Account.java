@@ -43,6 +43,9 @@ public abstract class Account implements Identifiable {
     public boolean getIsBlocked() {
         return this.isBlocked;
     }
+    public AccountType getType() {
+        return this.type;
+    }
 
     public void setBalance(BigDecimal amount) throws InsufficientFundsException {
         if(amount.compareTo(BigDecimal.ZERO) < 0) {

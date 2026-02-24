@@ -3,6 +3,7 @@ import java.util.HashMap;
 import java.util.Optional;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Collections;
 
 import model.Transaction;
 
@@ -44,11 +45,7 @@ public class TransactionsRepository {
         }
         return storage.get(accountId).stream().filter(ent -> ent.getId() == transactionId).findFirst();
     }
-
-    public Optional<List<Transaction>> getAllByUser(int accountId) {
-        if(!storage.containsKey(accountId) || storage.get(accountId) == null || storage.get(accountId).isEmpty()) {
-            return Optional.empty();
-        }
-        return Optional.of(storage.get(accountId));
+    public List<Transaction> getByAccountId(int accountId) {
+        return storage.getOrDefault(accountId, Collections.emptyList());
     }
 }

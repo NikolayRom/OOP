@@ -22,6 +22,15 @@ public class Request implements Identifiable {
         this.status = RequestStatus.PENDING;
         this.params = new HashMap<>();
     }
+    public Request(RequestType type, int userId) {
+        this.id = IdGen.getInstance().newId();
+        this.type = type;
+        this.userId = userId;
+        this.dateCreated = LocalDate.now();
+        this.details = "";
+        this.status = RequestStatus.PENDING;
+        this.params = new HashMap<>();
+    }
 
     @Override
     public int getId() {

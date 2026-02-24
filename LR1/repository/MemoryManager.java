@@ -3,6 +3,8 @@ package repository;
 import model.Identifiable;
 import java.util.HashMap;
 import java.util.Optional;
+import java.util.List;
+import java.util.ArrayList;
 
 public abstract class MemoryManager<T extends Identifiable> implements Repository<T> {
     protected HashMap<Integer, T> storage = new HashMap<>();
@@ -27,11 +29,8 @@ public abstract class MemoryManager<T extends Identifiable> implements Repositor
         return Optional.of(storage.get(id));
     }
     @Override
-    public Optional<HashMap<Integer, T>> getAll() {
-        if(storage.isEmpty()) {
-            return Optional.empty();
-        }
-        return Optional.of(new HashMap<>(storage));
+    public List<T> getAll() {
+        return new ArrayList<>(storage.values());
     }
     @Override
     public void save(T entity) {

@@ -3,7 +3,7 @@ package model;
 import java.util.List;
 import java.util.ArrayList;
 
-public abstract class Company implements Identifiable {
+public class Company implements Identifiable {
     private int id;
     private String name;
     private CompanyType type;
