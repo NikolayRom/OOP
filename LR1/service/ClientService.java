@@ -100,6 +100,15 @@ public class ClientService {
         return "Заявка на регистрацию в компанию отправлена.";
     }
 
+    public String requestCompanyDrop(int clientId, int companyId) throws CompanyNotFoundException, ClientNotFoundException {
+        validateClient(clientId);
+        CompaniesRepository.getInstance().findById(companyId).orElseThrow(() -> new CompanyNotFoundException());
+        Request request = new Request(RequestType.DROP_COMPANY, clientId);
+        request.addParam("companyId", String.valueOf(companyId));
+        RequestsRepository.getInstance().push(request);
+        return "Заявка на увольнение из компании отправлена";
+    }
+
     public String requestApproveSalaryProject(int clientId, int companyId, BigDecimal salary) throws ClientNotFoundException, CompanyNotFoundException, ClientNotEmployeeException {
         validateClient(clientId);
         CompaniesRepository.getInstance().findById(companyId).orElseThrow(() -> new CompanyNotFoundException());

@@ -1,7 +1,10 @@
 package repository;
+
 import java.util.Optional;
 import java.util.Queue;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.ArrayList;
 
 import model.Request;
 
@@ -20,17 +23,21 @@ public class RequestsRepository {
         storage.add(request);
     }
 
-    public Optional<Request> pop(int userId) {
+    public Optional<Request> pop() {
         if(storage.isEmpty()) {
             return Optional.empty();
         }
         return Optional.of(storage.poll());
     }
 
-    public Optional<Queue<Request>> getAll() {
+    public Optional<Request> peek() {
         if(storage.isEmpty()) {
             return Optional.empty();
         }
-        return Optional.of(storage);
+        return Optional.of(storage.peek());
+    }
+
+    public List<Request> getAll() {
+        return new ArrayList<>(storage);
     }
 }

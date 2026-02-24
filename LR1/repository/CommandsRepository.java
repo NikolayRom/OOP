@@ -30,17 +30,11 @@ public class CommandsRepository {
         return Optional.of(logs.get(userId).pop());
     }
 
-    public Optional<Stack<AbstractCommand>> getUserLogs(int userId) {
-        if(!logs.containsKey(userId) || logs.get(userId) == null || logs.get(userId).isEmpty()) {
-            return Optional.empty();
-        }
-        return Optional.of(logs.get(userId));
+    public Stack<AbstractCommand> getUserLogs(int userId) {
+        return logs.get(userId);
     }
 
-    public Optional<HashMap<Integer, Stack<AbstractCommand>>> getAllLogs() {
-        if(logs.isEmpty()) {
-            return Optional.empty();
-        }
-        return Optional.of(logs);
+    public HashMap<Integer, Stack<AbstractCommand>> getAllLogs() {
+        return logs;
     }
 }
