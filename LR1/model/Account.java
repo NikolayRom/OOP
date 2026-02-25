@@ -27,6 +27,10 @@ public abstract class Account implements Identifiable {
     public int getId() {
         return this.id;
     }
+    @Override
+    public String toString() {
+        return "ID: " + getId() + " | Тип: " + getType() + " | Баланс: " + getBalance();
+    }
 
     public int getUserId() {
         return this.userId;

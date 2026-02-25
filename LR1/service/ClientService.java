@@ -56,8 +56,10 @@ public class ClientService {
         return transactionList;
     }
 
-    public String requestAccountOpening(int clientId, int bankId, AccountType accountType, BigDecimal interestRate, int durationInMonth) throws ClientNotFoundException, BankNotFoundException {
+    public String requestAccountOpening(int clientId, int bankId, AccountType accountType, BigDecimal interestRate, int durationInMonth) throws ClientNotFoundException, BankNotFoundException, InvalidDurationInMonthException, InvalidInterestRateException {
         validateClient(clientId);
+        validateDurationInMonth(durationInMonth);
+        validateInterestRate(interestRate);
         BanksRepository.getInstance().findById(bankId).orElseThrow(() -> new BankNotFoundException());
         Request request = new Request(RequestType.OPEN_ACCOUNT, clientId);
         request.addParam("bankId", String.valueOf(bankId));
@@ -109,8 +111,9 @@ public class ClientService {
         return "Заявка на увольнение из компании отправлена";
     }
 
-    public String requestApproveSalaryProject(int clientId, int companyId, BigDecimal salary) throws ClientNotFoundException, CompanyNotFoundException, ClientNotEmployeeException {
+    public String requestApproveSalaryProject(int clientId, int companyId, BigDecimal salary) throws ClientNotFoundException, CompanyNotFoundException, ClientNotEmployeeException, InvalidAmountInputException {
         validateClient(clientId);
+        validateAmount(salary);
         CompaniesRepository.getInstance().findById(companyId).orElseThrow(() -> new CompanyNotFoundException());
         if (!CompaniesRepository.getInstance().findById(companyId).orElseThrow(() -> new CompanyNotFoundException()).getEmployeeIds().contains(clientId)) {
             throw new ClientNotEmployeeException();
@@ -121,9 +124,10 @@ public class ClientService {
         return "Заявка на подтверждение зарплатного проекта отправлена.";
     }
 
-    public String requestSalaryPayment(int clientId, int accountId, BigDecimal salary) throws ClientNotFoundException, AccountNotFoundException {
+    public String requestSalaryPayment(int clientId, int accountId, BigDecimal salary) throws ClientNotFoundException, AccountNotFoundException, InvalidAmountInputException {
         validateClient(clientId);
         validateAccount(clientId, accountId);
+        validateAmount(salary);
         Request request = new Request(RequestType.SALARY, clientId);
         request.addParam("accountId", String.valueOf(accountId));
         request.addParam("amount", salary.toString());
@@ -132,10 +136,11 @@ public class ClientService {
         return "Заявка на выплату зарплаты отправлена.";
     }
 
-    public String transferFunds(int clientId, int fromAccountId, int toAccountId, BigDecimal amount) throws ClientNotFoundException, AccountNotFoundException, Exception {
+    public String transferFunds(int clientId, int fromAccountId, int toAccountId, BigDecimal amount) throws ClientNotFoundException, AccountNotFoundException, InvalidAmountInputException, Exception {
         validateClient(clientId);
         validateAccount(clientId, fromAccountId);
         validateAccount(clientId, toAccountId);
+        validateAmount(amount);
         TransactionCommand command = new TransactionCommand(clientId, fromAccountId, toAccountId, amount);
         command.execute();
         CommandsRepository.getInstance().push(clientId, command);
@@ -160,6 +165,21 @@ public class ClientService {
     private void validateAccount(int clientId, int accountId) throws AccountNotFoundException {
         if(AccountsRepository.getInstance().findById(accountId).orElseThrow(() -> new AccountNotFoundException()).getUserId() != clientId) {
             throw new AccountNotFoundException();
+        }
+    }
+    private void validateInterestRate(BigDecimal interestRate) throws InvalidInterestRateException {
+        if(interestRate.compareTo(BigDecimal.ZERO) < 0 || interestRate.compareTo(BigDecimal.ONE) > 0) {
+            throw new InvalidInterestRateException();
+        }
+    }
+    private void validateDurationInMonth(int durationInMonth) throws InvalidDurationInMonthException {
+        if(durationInMonth < 1) {
+            throw new InvalidDurationInMonthException();
+        }
+    }
+    private void validateAmount(BigDecimal amount) throws InvalidAmountInputException {
+        if(amount.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new InvalidAmountInputException();
         }
     }
 }

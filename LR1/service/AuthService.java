@@ -12,7 +12,7 @@ import repository.UsersRepository;
 public class AuthService {
     private static AuthService instance;
     private AuthService() {}
-    public AuthService getInstance() {
+    public static AuthService getInstance() {
         if(instance == null) {
             instance = new AuthService();
         }

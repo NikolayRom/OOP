@@ -7,4 +7,8 @@ public class NoRequestException extends Exception {
     public NoRequestException(String message) {
         super(message);
     }
+    @Override
+    public String getMessage() {
+        return "No request: нет запросов, обрабатывать нечего";
+    }
 }

@@ -36,6 +36,10 @@ public class Request implements Identifiable {
     public int getId() {
         return this.id;
     }
+    @Override
+    public String toString() {
+        return "Id: " + getId() + " | Type: " + getType() + " | UserId: " + getUserId() + " | Date: " + getDateCreated();
+    }
 
     public RequestType getType() {
         return this.type;
