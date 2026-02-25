@@ -11,6 +11,7 @@ import repository.CommandsRepository;
 import repository.UsersRepository;
 import exception.*;
 import model.Role;
+import model.User;
 
 import java.util.Stack;
 
@@ -31,6 +32,9 @@ public class AdminService {
         }
         commands.sort(Comparator.comparingInt(cmd -> cmd.getId()));
         return commands.stream().map(cmd -> String.format("[Id: %d] User: %s | Action: %s", cmd.getId(), UsersRepository.getInstance().findById(cmd.getUserId()).map(usr -> usr.getLogin()).orElse("Unknow user. Id: " + cmd.getUserId()), cmd.getClass().getSimpleName())).toList();
+    }
+    public List<User> getAllUsers() {
+        return UsersRepository.getInstance().getAll().stream().filter(usr -> usr.getRole() != Role.ADMIN).toList();
     }
 
     public List<String> getUserSystemLog(int userId) throws UserNotFoundException {

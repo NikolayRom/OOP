@@ -37,7 +37,7 @@ public class DepositAccount extends Account {
         if(getIsBlocked()) {
             throw new BlockedAccountException();
         }
-        if(getIsBlocked()) {
+        if(getIsClosed()) {
             throw new ClosedDepositAccountException();
         }
         
@@ -82,23 +82,8 @@ public class DepositAccount extends Account {
     public void setIsEndDepositDuration(boolean stat) {
         this.isEndDepositDuration = stat;
     }
-
-    // public void transfer(BigDecimal amount, int accountId) throws NotFoundAccountException, ClosedDepositAccountException, BlockedAccountException, InsufficientFundsException, Exception {
-    //     if(AccountsRepository.getInstance().findById(accountId).equals(Optional.empty())) {
-    //         throw new NotFoundAccountException();
-    //     }
-    //     try {
-    //         withdrawal(amount);
-    //     } catch(Exception ex) {
-    //         throw ex;
-    //     }
-    //     try {
-    //         AccountsRepository.getInstance().findById(accountId).get().accrual(amount);
-    //     } catch(Exception ex) {
-    //         accrual(amount);
-    //         throw ex;
-    //     }
-        
-    // }
-
+    @Override
+    public String toString() {
+        return "ID: " + getId() + " | Тип: " + getType() + " | Баланс: " + getBalance() + " | Срок действия(мес): " + getDurationInMonth() + " | Процентная ставка: " + getInterestRate();
+    }
 }

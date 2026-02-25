@@ -29,8 +29,8 @@ public class RegistrationCommand extends AbstractCommand {
     @Override
     public String undo() throws ClientNotFoundException {
         Client client = (Client) UsersRepository.getInstance().findById(getUserId()).filter(user -> user instanceof Client).orElseThrow(() -> new ClientNotFoundException());
-        client.setStatus(getOldStatus());
-        return "Отмена: Регистрация клиента " + getUserId() + " отменена. Статус вернулся к " + getOldStatus();
+        client.setStatus(ClientStatus.BLOCKED);
+        return "Отмена: Регистрация клиента " + getUserId() + " отменена.";
     }
     @Override
     public String toString() {

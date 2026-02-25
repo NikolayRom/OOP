@@ -70,4 +70,7 @@ public class Request implements Identifiable {
     public String getParam(String key) {
         return this.params.get(key);
     }
+    public Map<String, String> getListParams() {
+        return new HashMap<>(this.params);
+    }
 }

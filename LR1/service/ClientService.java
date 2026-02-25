@@ -26,6 +26,7 @@ import model.Account;
 import model.AccountType;
 import model.Request;
 import model.Transaction;
+import model.Client;
 
 public class ClientService {
     private static ClientService instance;
@@ -102,11 +103,14 @@ public class ClientService {
         return "Заявка на регистрацию в компанию отправлена.";
     }
 
-    public String requestCompanyDrop(int clientId, int companyId) throws CompanyNotFoundException, ClientNotFoundException {
+    public String requestCompanyDrop(int clientId) throws CompanyNotFoundException, ClientNotFoundException, ClientNotEmployeeException {
         validateClient(clientId);
-        CompaniesRepository.getInstance().findById(companyId).orElseThrow(() -> new CompanyNotFoundException());
+        Client client = (Client) UsersRepository.getInstance().findById(clientId).orElseThrow(() -> new ClientNotFoundException());
+        if (!CompaniesRepository.getInstance().findById(client.getCompanyId()).orElseThrow(() -> new CompanyNotFoundException()).getEmployeeIds().contains(clientId)) {
+            throw new ClientNotEmployeeException();
+        }
         Request request = new Request(RequestType.DROP_COMPANY, clientId);
-        request.addParam("companyId", String.valueOf(companyId));
+        request.addParam("companyId", String.valueOf(client.getCompanyId()));
         RequestsRepository.getInstance().push(request);
         return "Заявка на увольнение из компании отправлена";
     }
@@ -124,9 +128,10 @@ public class ClientService {
         return "Заявка на подтверждение зарплатного проекта отправлена.";
     }
 
-    public String requestSalaryPayment(int clientId, int accountId, BigDecimal salary) throws ClientNotFoundException, AccountNotFoundException, InvalidAmountInputException {
+    public String requestSalaryPayment(int clientId, int accountId, BigDecimal salary) throws ClientNotFoundException, AccountNotFoundException, InvalidAmountInputException, SalaryProjectNotFoundException {
         validateClient(clientId);
         validateAccount(clientId, accountId);
+        validateHasSalaryProject(clientId);
         validateAmount(salary);
         Request request = new Request(RequestType.SALARY, clientId);
         request.addParam("accountId", String.valueOf(accountId));
@@ -136,7 +141,7 @@ public class ClientService {
         return "Заявка на выплату зарплаты отправлена.";
     }
 
-    public String transferFunds(int clientId, int fromAccountId, int toAccountId, BigDecimal amount) throws ClientNotFoundException, AccountNotFoundException, InvalidAmountInputException, Exception {
+    public String transferFunds(int clientId, int fromAccountId, int toAccountId, BigDecimal amount) throws ClientNotFoundException, AccountNotFoundException, InvalidAmountInputException, BlockedAccountException, InsufficientFundsException, ClosedDepositAccountException, EndDepositDurationException, Exception {
         validateClient(clientId);
         validateAccount(clientId, fromAccountId);
         validateAccount(clientId, toAccountId);
@@ -163,8 +168,8 @@ public class ClientService {
         UsersRepository.getInstance().findById(clientId).filter(usr -> usr.getRole() == Role.CLIENT).orElseThrow(() -> new ClientNotFoundException());
     }
     private void validateAccount(int clientId, int accountId) throws AccountNotFoundException {
-        if(AccountsRepository.getInstance().findById(accountId).orElseThrow(() -> new AccountNotFoundException()).getUserId() != clientId) {
-            throw new AccountNotFoundException();
+        if(AccountsRepository.getInstance().findById(accountId).orElseThrow(() -> new AccountNotFoundException("Account not found: не найден выбранный счет или вклад")).getUserId() != clientId) {
+            throw new AccountNotFoundException("Account not found: не найден выбранный счет или вклад");
         }
     }
     private void validateInterestRate(BigDecimal interestRate) throws InvalidInterestRateException {
@@ -180,6 +185,12 @@ public class ClientService {
     private void validateAmount(BigDecimal amount) throws InvalidAmountInputException {
         if(amount.compareTo(BigDecimal.ZERO) <= 0) {
             throw new InvalidAmountInputException();
+        }
+    }
+    private void validateHasSalaryProject(int clientId) throws ClientNotFoundException, SalaryProjectNotFoundException {
+        Client client = (Client)UsersRepository.getInstance().findById(clientId).orElseThrow(() -> new ClientNotFoundException());
+        if(!client.getHasSalaryProject()) {
+            throw new SalaryProjectNotFoundException();
         }
     }
 }

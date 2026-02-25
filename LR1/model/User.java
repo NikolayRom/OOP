@@ -20,6 +20,11 @@ public abstract class User implements Identifiable {
         return this.id;
     }
 
+    @Override
+    public String toString() {
+        return "> Id: " + getId() + " | Role: " + getRole() + " | Login: " + getLogin() + " | Name: " + getName() + ";";
+    }
+
     public String getLogin() {
         return this.login;
     }

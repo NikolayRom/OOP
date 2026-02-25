@@ -2,9 +2,17 @@ package console;
 
 import exception.*;
 import model.User;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
+
 import service.ManagerService;
+import service.ClientService;
+import service.CompanyService;
 import model.Request;
+import model.Transaction;
+import model.Account;
 
 public class ManagerMenu {
     private User user;
@@ -21,6 +29,10 @@ public class ManagerMenu {
             System.out.println("2. < Блокировать счет клиента >");
             System.out.println("3. < Разблокировать счет клиента >");
             System.out.println("4. < Просмотр сотрудников компании >");
+            System.out.println("5. < Просмотр всех компаний > ");
+            System.out.println("6. < Просмотр всех клиентов >");
+            System.out.println("7. < История транзакций клиента >");
+            System.out.println("8. < Просмотр всех счетов/вкладов клиента >");
             System.out.println("0. < Выход >");
 
             String choice = scanner.nextLine();
@@ -44,11 +56,27 @@ public class ManagerMenu {
                         System.out.print("Id компании: ");
                         ManagerService.getInstance().getCompanyEmployees(Integer.parseInt(scanner.nextLine())).forEach(u -> System.out.println(u.toString()));
                         break;
+                    case "5":
+                        CompanyService.getInstance().getAllCompanies().forEach(company -> System.out.println("> " + company.getId() + ". " + company.getName() + ";"));
+                        break;
+                    case "6":
+                        showAllClients().forEach(str -> System.out.println(str));
+                        break;
+                    case "7":
+                        System.out.println("Id пользователя:");
+                        showTransactions(Integer.parseInt(scanner.nextLine())).forEach(str -> System.out.println(str));;
+                        break;
+                    case "8":
+                        System.out.println("Id пользователя:");
+                        showAllAccountsByClient(Integer.parseInt(scanner.nextLine())).forEach(str -> System.out.println(str));
+                        break;
                     case "0":
                         return;
                     default:
                         throw new InvalidInputException();
                 }
+            } catch(NumberFormatException ex) {
+                System.out.println("<<<ERROR: Invalid input: некорректный ввод для команды, попробуйте еще раз>>>");
             } catch (Exception ex) {
                 System.out.println("<<<ERROR: " + ex.getMessage() + ">>>");
             }
@@ -63,7 +91,9 @@ public class ManagerMenu {
 
         System.out.println("\n==========ТЕКУЩИЙ ЗАПРОС==========");
         System.out.println(req.toString());
-        System.out.println("Параметры: " + req.getDetails() + ";\n");
+        for(String key: req.getListParams().keySet()) {
+            System.out.println("[" + key + "] : " + req.getListParams().get(key));
+        }
 
         System.out.println("1. ОДОБРИТЬ");
         System.out.println("2. ОТКЛОНИТЬ");
@@ -81,8 +111,43 @@ public class ManagerMenu {
                 default:
                     throw new InvalidInputException();
             }
+        } catch(NumberFormatException ex) {
+                System.out.println("<<<ERROR: Invalid input: некорректный ввод для команды, попробуйте еще раз>>>");
         } catch (Exception ex) {
             System.out.println("<<<ERROR: " + ex.getMessage() + ">>>");
         }
+    }
+    private List<String> showTransactions(int userId) throws TransactionNotFoundException, ClientNotFoundException {
+        List<Transaction> list = ClientService.getInstance().getClientTransactions(userId);
+        if(list.isEmpty() || list == null) {
+            throw new TransactionNotFoundException();
+        }
+        List<String> result = new ArrayList<>();
+        for(Transaction trans : list) {
+            result.add(trans.toString());
+        }
+        return result;
+    }
+    private List<String> showAllClients() throws ClientNotFoundException {
+        List<User> list = ManagerService.getInstance().getAllClients();
+        if(list.isEmpty() || list == null) {
+            throw new ClientNotFoundException();
+        }
+        List<String> result = new ArrayList<>();
+        for(User user : list) {
+            result.add(user.toString());
+        }
+        return result;
+    }
+    private List<String> showAllAccountsByClient(int userId) throws AccountNotFoundException, ClientNotFoundException {
+        List<Account> list = ClientService.getInstance().getClientAccounts(userId);
+        if(list.isEmpty() || list == null) {
+            throw new AccountNotFoundException();
+        }
+        List<String> result = new ArrayList<>();
+        for(Account account : list) {
+            result.add(account.toString());
+        }
+        return result;
     }
 }

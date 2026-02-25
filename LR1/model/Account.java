@@ -2,6 +2,9 @@ package model;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+import exception.BlockedAccountException;
+import exception.ClosedDepositAccountException;
+import exception.EndDepositDurationException;
 import exception.InsufficientFundsException;
 
 public abstract class Account implements Identifiable {
@@ -61,6 +64,6 @@ public abstract class Account implements Identifiable {
         this.isBlocked = bool;
     }
 
-    public abstract void deposit(BigDecimal amount) throws Exception;
-    public abstract void withdrawal(BigDecimal amount) throws Exception;
+    public abstract void deposit(BigDecimal amount) throws ClosedDepositAccountException, BlockedAccountException, InsufficientFundsException, EndDepositDurationException;
+    public abstract void withdrawal(BigDecimal amount) throws BlockedAccountException, InsufficientFundsException, ClosedDepositAccountException;
 }

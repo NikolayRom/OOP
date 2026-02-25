@@ -1,14 +1,14 @@
 package model;
 
 public final class IdGen {
-    private static IdGen Instance;
+    private static IdGen instance;
     private int id = 1;
     private IdGen(){}
     public static IdGen getInstance() {
-        if(Instance == null) {
-            Instance = new IdGen();
+        if(instance == null) {
+            instance = new IdGen();
         }
-        return Instance;
+        return instance;
     }
 
     public int newId() {

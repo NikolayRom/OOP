@@ -3,6 +3,10 @@ package command;
 import java.math.BigDecimal;
 
 import exception.AccountNotFoundException;
+import exception.BlockedAccountException;
+import exception.ClosedDepositAccountException;
+import exception.EndDepositDurationException;
+import exception.InsufficientFundsException;
 import repository.AccountsRepository;
 import repository.TransactionsRepository;
 import model.Account;
@@ -39,22 +43,28 @@ public class TransactionCommand extends AbstractCommand {
     }
 
     @Override
-    public String execute() throws AccountNotFoundException, Exception {
+    public String execute() throws BlockedAccountException, InsufficientFundsException, ClosedDepositAccountException, EndDepositDurationException, AccountNotFoundException {
         Account source = AccountsRepository.getInstance().findById(getFromAccountId()).orElseThrow(() -> new AccountNotFoundException());
         Account target = AccountsRepository.getInstance().findById(getToAccountId()).orElseThrow(() -> new AccountNotFoundException());
         source.withdrawal(getAmount());
-        target.deposit(getAmount());
+        try {
+            target.deposit(getAmount());
+        } catch(Exception ex) {
+            source.deposit(getAmount());
+            throw ex;
+        }
         Transaction transaction = new Transaction(getFromAccountId(), getToAccountId(), getAmount(), TransactionType.TRANSFER);
         setCreatedTransactionId(transaction.getId());
         TransactionsRepository.getInstance().save(transaction);
         return "Выполнено: Перевод " + getAmount() + " | " + getFromAccountId() + " -> " + getToAccountId();
     }
     @Override
-    public String undo() throws AccountNotFoundException, Exception {
+    public String undo() throws AccountNotFoundException, InsufficientFundsException {
         Account source = AccountsRepository.getInstance().findById(getFromAccountId()).orElseThrow(() -> new AccountNotFoundException());
         Account target = AccountsRepository.getInstance().findById(getToAccountId()).orElseThrow(() -> new AccountNotFoundException());
-        target.withdrawal(getAmount());
-        source.deposit(getAmount());
+        target.setBalance(target.getBalance().subtract(getAmount()));
+        source.setBalance(source.getBalance().add(getAmount()));
+        
         TransactionsRepository.getInstance().deleteById(getFromAccountId(), getCreatedTransactionId());
         TransactionsRepository.getInstance().deleteById(getToAccountId(), getCreatedTransactionId());
         return "Отмена: Перевод " + getCreatedTransactionId() + " аннулирован, средства возвращены.";

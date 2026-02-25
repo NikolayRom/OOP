@@ -7,7 +7,7 @@ public class ActionRouter {
     public void route(User user) {
         if(user == null) return;
 
-        System.out.println("\n=====Добро пожаловать, " + user.getName() + " [" + user.getRole() + "] !=====\n");
+        System.out.println("\n=====Добро пожаловать, " + user.getName() + " [" + user.getRole() + "] =====\n");
 
         switch(user.getRole()) {
             case Role.CLIENT:

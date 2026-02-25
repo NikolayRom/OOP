@@ -28,6 +28,9 @@ public class ManagerService {
     public List<Request> getPendingRequest() {
         return RequestsRepository.getInstance().getAll().stream().filter(req -> req.getStatus().equals(RequestStatus.PENDING)).toList();
     }
+    public List<User> getAllClients() {
+        return UsersRepository.getInstance().getAll().stream().filter(usr -> usr.getRole() == Role.CLIENT).toList();
+    }
     
     public Request getNextRequestInfo() {
         return RequestsRepository.getInstance().peek().orElse(null);

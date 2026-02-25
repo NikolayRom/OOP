@@ -16,6 +16,7 @@ public class Client extends User {
         this.salary = BigDecimal.ZERO;
     }
 
+
     public ClientStatus getStatus() {
         return this.status;
     }
@@ -48,6 +49,6 @@ public class Client extends User {
 
     @Override
     public String toString() {
-        return "Client{" + getId() + ", name='" + getName() + "', status=" + getStatus() + '}';
+        return "Client{" + getId() + ", name='" + getName() + "', status=" + getStatus() + ", hasSalaryProject='" + getHasSalaryProject() + '}';
     }
 }

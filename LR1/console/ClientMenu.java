@@ -1,10 +1,15 @@
 package console;
 
 import model.User;
+import repository.CompaniesRepository;
+import repository.UsersRepository;
 import service.ClientService;
+import service.CompanyService;
 import model.Account;
 import model.AccountType;
+import model.Role;
 import model.Transaction;
+import model.Client;
 
 import java.util.Scanner;
 import java.util.List;
@@ -32,7 +37,7 @@ public class ClientMenu {
             System.out.println("5. < Закрыть счет/вклад >");
             System.out.println("6. < Накопление вклада >");
             System.out.println("7. < Предприятия и зарплатный проект >");
-            System.out.println("0. < Выход в главное меню >");
+            System.out.println("0. < Выход >");
         
             String choice = scanner.nextLine();
         
@@ -68,7 +73,9 @@ public class ClientMenu {
                     default:
                         throw new InvalidInputException();
                 }
-            } catch(Exception ex) {
+            } catch(NumberFormatException ex) {
+                System.out.println("<<<ERROR: Invalid input: некорректный ввод для команды, попробуйте еще раз>>>");
+            } catch (Exception ex) {
                 System.out.println("<<<ERROR: " + ex.getMessage() + ">>>");
             }
         }
@@ -96,7 +103,7 @@ public class ClientMenu {
         }
         return result;
     }
-    private String makeTransfer() throws ClientNotFoundException, AccountNotFoundException, Exception {
+    private String makeTransfer() throws ClientNotFoundException, AccountNotFoundException, InvalidAmountInputException, BlockedAccountException, InsufficientFundsException, ClosedDepositAccountException, EndDepositDurationException, Exception {
         System.out.println("Id счета списания:");
         int fromId = Integer.parseInt(scanner.nextLine());
         System.out.println("Id счета получателя:");
@@ -145,9 +152,11 @@ public class ClientMenu {
         while (true) {
             System.out.println("\n==========ПРЕДПРИЯТИЯ И ЗАРПЛАТНЫЙ ПРОЕКТ==========");
             System.out.println("1. < Список компаний >");
-            System.out.println("2. < Подать заявку на трудоустройство >");
-            System.out.println("3. < Подать заявку на Зарплатный Проект >");
-            System.out.println("4. < Получить зарплату >");
+            System.out.println("2. < Узнать о себе, как о сотруднике >");
+            System.out.println("3. < Подать заявку на трудоустройство >");
+            System.out.println("4. < Подать заявку на Зарплатный Проект >");
+            System.out.println("5. < Получить зарплату >");
+            System.out.println("6. < Уволиться из предприятия >");
             System.out.println("0. < Назад >");
 
             String choice = scanner.nextLine();
@@ -155,35 +164,50 @@ public class ClientMenu {
             try {
                 switch (choice) {
                     case "1":
-                        ClientService.getInstance().getAllCompanies().forEach(company -> System.out.println("> " + company.getId() + ". " + company.getName() + ";"));
+                        CompanyService.getInstance().getAllCompanies().forEach(company -> System.out.println("> " + company.getId() + ". " + company.getName() + ";"));
                         break;
                     case "2":
+                        System.out.println(showCompany());
+                        break;
+                    case "3":
                         System.out.println("Id компании: ");
                         int cId = Integer.parseInt(scanner.nextLine());
                         System.out.println(ClientService.getInstance().requestCompanyEnroll(user.getId(), cId));
                         break;
-                    case "3":
-                        System.out.println("Id компании: ");
-                        int compId = Integer.parseInt(scanner.nextLine());
-                        System.out.println("Желаемая зарплата: ");
-                        BigDecimal salary = new BigDecimal(scanner.nextLine());
-                        System.out.println(ClientService.getInstance().requestApproveSalaryProject(user.getId(), compId, salary));
-                        break;
                     case "4":
+                        Client client = (Client) user;
+                        System.out.println(ClientService.getInstance().requestApproveSalaryProject(user.getId(), client.getCompanyId(), BigDecimal.ONE));
+                        break;
+                    case "5":
                         System.out.println("Id счета для зачисления: ");
                         int accId = Integer.parseInt(scanner.nextLine());
                         System.out.println("Сумма к выплате: ");
                         BigDecimal am = new BigDecimal(scanner.nextLine());
                         System.out.println(ClientService.getInstance().requestSalaryPayment(user.getId(), accId, am));
                         break;
+                    case "6":
+                        System.out.println(ClientService.getInstance().requestCompanyDrop(user.getId()));
+                        break;
                     case "0":
                         return;
                     default:
                         throw new InvalidInputException();
                 }
+            } catch(NumberFormatException ex) {
+                System.out.println("<<<ERROR: Invalid input: некорректный ввод для команды, попробуйте еще раз>>>");
             } catch (Exception ex) {
                 System.out.println("<<<ERROR: " + ex.getMessage() + ">>>");
             }
         }
+    }
+    private String showCompany() throws ClientNotFoundException, CompanyNotFoundException {
+        if(!UsersRepository.getInstance().findById(user.getId()).orElseThrow(() -> new ClientNotFoundException()).getRole().equals(Role.CLIENT)) {
+            throw new ClientNotFoundException();
+        }
+        Client client = (Client)user;
+        if(client.getCompanyId() == -1) {
+            throw new CompanyNotFoundException();
+        }
+        return CompaniesRepository.getInstance().findById(client.getCompanyId()).orElseThrow(() -> new CompanyNotFoundException()).toString() + "\n" + client.toString();
     }
 }

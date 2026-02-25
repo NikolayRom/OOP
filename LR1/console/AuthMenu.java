@@ -15,7 +15,7 @@ public class AuthMenu {
 
     public User show() {
         while(true) {
-            System.out.println("/n==========ВХОД==========");
+            System.out.println("\n\n\n==========ВХОД==========");
             System.out.println("1. < Войти >");
             System.out.println("2. < Зарегестрироваться >");
             System.out.println("0. < Выход >");
@@ -36,7 +36,9 @@ public class AuthMenu {
                     default:
                         throw new InvalidInputException();
                 }
-            } catch(Exception ex) {
+            } catch(NumberFormatException ex) {
+                System.out.println("<<<ERROR: Invalid input: некорректный ввод для команды, попробуйте еще раз>>>");
+            } catch (Exception ex) {
                 System.out.println("<<<ERROR: " + ex.getMessage() + ">>>");
             }
         }
