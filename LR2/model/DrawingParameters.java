@@ -1,7 +1,5 @@
 package model;
 
-import exception.CloneNotSupported;
-
 import java.awt.Color;
 
 public class DrawingParameters implements Cloneable {
