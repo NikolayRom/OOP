@@ -42,4 +42,10 @@ public class RectangleShape extends AbstractShape {
     public AbstractShape cloneShape() {
         return new RectangleShape(new Point(getStartPoint()), new Point(getEndPoint()), getParameters().clone());
     }
+
+    @Override
+    public void move(int dx, int dy) {
+        getStartPoint().translate(dx, dy);
+        getEndPoint().translate(dx, dy);
+    }
 }

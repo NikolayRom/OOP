@@ -21,4 +21,5 @@ public abstract class AbstractShape {
 
     public abstract void draw(Graphics2D g2d);
     public abstract AbstractShape cloneShape();
+    public abstract void move(int dx, int dy);
 }

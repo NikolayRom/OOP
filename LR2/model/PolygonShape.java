@@ -2,7 +2,7 @@ package model;
 
 import java.awt.Graphics2D;
 import java.awt.Point;
-import java.awt.Polygon;
+import java.awt.geom.Path2D;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,18 +29,26 @@ public class PolygonShape extends AbstractShape {
         if(points.size() < 2) {
             return;
         }
-        
-        Polygon pol = new Polygon();
-        for(Point p : points) {
-            pol.addPoint(p.x, p.y);
+
+        Path2D path = new Path2D.Float();
+        path.setWindingRule(Path2D.WIND_NON_ZERO);
+
+        Point firstPoint = points.get(0);
+        path.moveTo(firstPoint.x, firstPoint.y);
+
+        for(Point point : points) {
+            path.lineTo(point.x, point.y);
         }
+
+        path.closePath();
 
         if(getParameters().getFillColor() != null) {
             g2d.setColor(getParameters().getFillColor());
-            g2d.fillPolygon(pol);
+            g2d.fill(path);
         }
+
         applyStrokeAndColor(g2d);
-        g2d.drawPolygon(pol);
+        g2d.draw(path);
     }
 
     @Override
@@ -50,5 +58,12 @@ public class PolygonShape extends AbstractShape {
             copy.addPoint(new Point(p));
         }
         return copy;
+    }
+
+    @Override
+    public void move(int dx, int dy) {
+        for(Point p : points) {
+            p.translate(dx, dy);
+        }
     }
 }

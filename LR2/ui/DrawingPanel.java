@@ -3,17 +3,17 @@ package ui;
 import javax.swing.JPanel;
 
 import java.awt.Color;
-import java.util.ArrayList;
-import java.util.List;
 import model.AbstractShape;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Stack;
 
 public class DrawingPanel extends JPanel {
-    private List<AbstractShape> shapes = new ArrayList<>();
+    private Stack<AbstractShape> shapes = new Stack<>();
+    private Stack<AbstractShape> redoShapes = new Stack<>();
     private AbstractShape currentShape = null;
 
     public DrawingPanel() {
@@ -21,10 +21,11 @@ public class DrawingPanel extends JPanel {
     }
 
     public void addShape(AbstractShape shape) {
-        shapes.add(shape);
+        shapes.push(shape);
+        redoShapes.clear();
         repaint();
     }
-    public List<AbstractShape> getShapes() {
+    public Stack<AbstractShape> getShapes() {
         return shapes;
     }
     public AbstractShape getCurrentShape() {
@@ -32,6 +33,28 @@ public class DrawingPanel extends JPanel {
     }
     public void setCurrentShape(AbstractShape shape) {
         this.currentShape = shape;
+    }
+
+    public void undo() {
+        if(!shapes.isEmpty()) {
+            redoShapes.push(shapes.pop());
+            repaint();
+        }
+    }
+
+    public void redo() {
+        if(!redoShapes.isEmpty()) {
+            shapes.push(redoShapes.pop());
+            repaint();
+        }
+    }
+
+    public void copyLastShape() {
+        if(!shapes.isEmpty()) {
+            AbstractShape clone = shapes.peek().cloneShape();
+            clone.move(20, 20);
+            addShape(clone);
+        }
     }
 
     @Override

@@ -103,6 +103,16 @@ public class DrawingApp extends JFrame {
         JSpinner spinnerThickness = new JSpinner(new SpinnerNumberModel(2.0, 1.0, 20.0, 1.0));
         spinnerThickness.addChangeListener(e -> setCurrentThickness(((Double) spinnerThickness.getValue()).floatValue()));
 
+        JButton btnUndo = new JButton("Undo");
+        btnUndo.addActionListener(e -> getDrawingPanel().undo());
+
+        JButton btnRedo = new JButton("Redo");
+        btnRedo.addActionListener(e -> getDrawingPanel().redo());
+
+        JButton btnCopy = new JButton("Copy");
+        btnCopy.addActionListener(e -> getDrawingPanel().copyLastShape());
+
+
         toolBar.add(btnLine);
         toolBar.add(btnRect);
         toolBar.add(btnEllipse);
@@ -114,6 +124,12 @@ public class DrawingApp extends JFrame {
         toolBar.add(btnLineColor);
         toolBar.add(btnFillColor);
         toolBar.add(btnNoFill);
+
+        toolBar.addSeparator();
+        
+        toolBar.add(btnUndo);
+        toolBar.add(btnRedo);
+        toolBar.add(btnCopy);
 
         toolBar.addSeparator();
 

@@ -50,4 +50,11 @@ public class PolylineShape extends AbstractShape {
         }
         return copy;
     }
+
+    @Override
+    public void move(int dx, int dy) {
+        for(Point p : points) {
+            p.translate(dx, dy);
+        }
+    }
 }
