@@ -5,5 +5,6 @@ public enum ShapeType {
     RECTANGLE,
     ELLIPSE,
     POLYLINE,
-    POLYGON
+    POLYGON,
+    CURSOR
 }
